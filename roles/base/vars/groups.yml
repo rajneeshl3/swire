@@ -1,0 +1,6 @@
+---
+grps:
+  - name: human
+    gid: 900
+  - name: ops
+    gid: 700

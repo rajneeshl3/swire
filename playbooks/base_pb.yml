@@ -1,0 +1,7 @@
+---
+- name: Base role
+  hosts: '{{ target }}'
+  vars:
+     target: all
+  roles:
+    - base

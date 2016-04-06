@@ -1,0 +1,27 @@
+---
+- name: reload nagios
+  sudo: yes
+  sudo_user: nagios
+  service: name=nagios-nrpe-server state=reloaded
+
+- name: reload syslogng
+  sudo: yes
+  service: name=syslog-ng state=reloaded
+
+
+- name: reload postfix
+  sudo: yes
+  service: name=postfix state=reloaded
+
+- name: reload newrelic
+  sudo: yes
+  command: /etc/init.d/newrelic-sysmond force-reload
+  tags: newrelic
+
+- name: reload xinetd
+  sudo: yes
+  service: name=xinetd state=reloaded
+
+- name: update timezone
+  sudo: yes
+  command: dpkg-reconfigure --frontend noninteractive tzdata

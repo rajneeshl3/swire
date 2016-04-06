@@ -1,0 +1,3 @@
+###Ansible Managed###
+# Members of the ops group may gain root privileges
+%ops ALL=(ALL) NOPASSWD:ALL

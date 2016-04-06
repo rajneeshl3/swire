@@ -1,0 +1,16 @@
+---
+users:
+  - name: csruz
+    uid:  1062
+    groups: human,ops
+    comment: ansible_managed
+    system: no
+    authorized:
+     - ssh_pubkeys/csruz.ssh
+  - name: brsied
+    uid:  1061
+    groups: human,ops
+    comment: ansible_managed
+    system: no
+    authorized:
+     - ssh_pubkeys/brsied.ssh

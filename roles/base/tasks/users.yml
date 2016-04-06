@@ -1,0 +1,15 @@
+---
+- include_vars: users.yml
+
+- name: Create user
+  sudo: yes
+  user: name={{ item.name }} groups={{ item.groups }}
+          state=present uid={{ item.uid }} comment={{ item.comment }} system={{ item.system }} shell=/bin/bash
+  with_items: users
+
+- name: Set Authorized Keys
+  sudo: yes
+  authorized_key: "user={{ item.0.name }} key='{{ lookup('file', item.1) }}'"
+  with_subelements:
+     - users
+     - authorized

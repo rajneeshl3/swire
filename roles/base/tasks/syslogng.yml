@@ -1,0 +1,62 @@
+---
+- name: Remove rsyslog
+  #we replace rsyslog with syslog-ng
+  sudo: yes
+  apt: name=rsyslog* state=absent
+
+- name: Install Syslog-ng
+  sudo: yes
+  apt: name={{ item }} update_cache=yes state=present
+  with_items:
+      - syslog-ng
+
+- name: Configure 22-syslog-ng file to https://logs-01.loggly.com/
+  sudo: yes
+  copy: >
+    src=22-loggly.conf
+    dest=/etc/syslog-ng/conf.d/22-loggly.conf
+    backup=yes
+    owner=root
+    group=root
+    mode=0644
+  notify: reload syslogng
+
+- name: Configure 25-syslog-ng file for php error-logs to https://logs-01.loggly.com/
+  sudo: yes
+  copy: >
+    src=25-loggly.conf
+    dest=/etc/syslog-ng/conf.d/25-loggly.conf
+    backup=yes
+    owner=root
+    group=root
+    mode=0644
+  notify: reload syslogng
+
+- name: Configure syslog-ng-hosts.conf file
+  sudo: yes
+  template: >
+    src=syslog-ng-hosts.conf.j2
+    dest=/etc/syslog-ng/syslog-ng-hosts.conf
+    backup=yes
+    owner=root
+    group=root
+    mode=0644
+
+- name: Setting variable based on Ubuntu flavor
+  set_fact: SYSLOG_VER="3.5"
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_release == 'trusty'
+
+- name: Configure syslog-ng
+  sudo: yes
+  template: src=syslog-ng.conf.j2 dest=/etc/syslog-ng/syslog-ng.conf backup=yes owner=root group=root mode=0664
+  notify: reload syslogng
+
+- name: Configure logrotate for syslog-ng in php app
+  sudo: yes
+  copy: src=zzz_logrotate_php dest=/etc/logrotate.d/zzz_logrotate_php backup=yes owner=root group=root mode=0644
+  when: inventory_hostname in groups['php'])
+  tags: zz
+
+- name: enable and start syslog-ng
+  sudo: yes
+  service: name=syslog-ng enabled=true state=restarted
